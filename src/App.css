@@ -1,0 +1,80 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.card{
+  transition:all 0.3s !important;
+  background-color: rgb(159, 92, 197) !important;
+}
+
+.card:hover{
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border:1px solid rgb(126, 111, 47);
+  box-shadow: 4px 5px 5px rgb(10, 9, 9);
+}
+.icon{
+  transition:all 0.3s !important;
+}
+.icon:hover{
+  transform: scale(1.1);
+  box-shadow: 0px 7px 7px rgb(10, 9, 9);
+  border:1px solid white;
+  opacity: 0.5;
+}
+
+/* import font  */
+
+@font-face {
+    font-family: AhmedBold ;
+    src: url(../public/Font/Teko-SemiBold.ttf);
+    font-weight: 900;
+  }@font-face {
+    font-family: AhmedBold ;
+    src: url(../public/Font/Teko-Bold.ttf);
+    font-weight: 600;
+  }
+  @font-face {
+    font-family: AhmedBold ;
+    src: url(../public/Font/Teko-Medium.ttf);
+    font-weight: normal;
+  }
+  @font-face {
+    font-family: AhmedBold ;
+    src: url(../public/Font/Teko-Regular.ttf);
+    font-weight: 200;
+  }
