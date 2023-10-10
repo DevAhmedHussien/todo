@@ -1,5 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
+
 export default function ReducerTodo(currentTodo,action){
     if(action.type == 'add'){
         let newTodo = 
@@ -7,7 +8,10 @@ export default function ReducerTodo(currentTodo,action){
             id : uuidv4() ,                                     
             title : action.payload.title ,                                     
             details :action.payload.details,                                        
-            isCompleted : false                                     
+            isCompleted : false ,
+            comment:action.payload.comment,
+            startTime:action.payload.startTime,
+            endTime:action.payload.endTime                      
         }
         let setNewTodo =[...currentTodo , newTodo];
         localStorage.setItem("todos",JSON.stringify(setNewTodo))
@@ -16,7 +20,11 @@ export default function ReducerTodo(currentTodo,action){
         else if(action.type=='update'){
         const UpdatingTodo = currentTodo.map( (element) => {
             if (element.id ==  action.payload.targetTodo.id){    
-            return {...element ,title: action.payload.title, details :action.payload.details,
+            return {...element ,title: action.payload.title, 
+                details :action.payload.details,
+                comment:action.payload.comment,
+                startTime:action.payload.startTime,
+                endTime:action.payload.endTime  
             }} 
             else {
                     return element;

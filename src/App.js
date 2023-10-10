@@ -14,11 +14,11 @@ function App() {
   const theme =createTheme({
     typography:{
       fontFamily: ["AhmedBold"],
-      fontWeightLight:500
+      fontWeightLight:300
     },
     palette:{
       primary :{
-        main:"#827717"
+        main:"#827717" //#827717
       },
       secondary:{
         main:"#825457"

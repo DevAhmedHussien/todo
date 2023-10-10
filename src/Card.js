@@ -5,9 +5,7 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Work from './Work';
 import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Unstable_Grid2'; 
 import Button from '@mui/material/Button';
-// import { v4 as uuidv4 } from 'uuid';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Box from '@mui/material/Box';
@@ -15,10 +13,14 @@ import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Backdrop from '@mui/material/Backdrop';
 import  { useTodo}  from './Contexts/TodoContext';
-// import { ToastContext } from './Contexts/ToastContext';
 import { useToast } from './Contexts/ToastContext';
 import { useEffect, useState  , useMemo  } from 'react';
-// import ReducerTodo from './ReducerTodo';
+import dayjs from 'dayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
+import './App.css';
 
 const style = {
     position: 'absolute',
@@ -41,33 +43,20 @@ export default function BasicCard() {
     let [sendTodo,setSendTodo] = useState()
     let [value , setVlaue] = useState('');
     let [valueM , setVlaueM] = useState('');
-
-    // when i used context for state 
-    // let [todoD,setTodos] = useContext(TodoContext)
-
-
+    let [comment , setComment] = useState('')
+    const [startTime, setStartTime] = useState(dayjs('2022-04-17'));
+    const [endTime, setEndTime] = useState(dayjs('2022-04-17'));
     let [display,setDisplay] = useState('all')
     const [open, setOpen] = useState(false);
     const [openU, setOpenU] = useState(false); 
-       // reduce 
-    // let [todos,dispatch] = useReducer(ReducerTodo,[])
-
-    // context and provider from context 
-    // let {todos,dispatch} = useContext(TodoContext)
-
-    // context and provider from context with custom
     let {todos,dispatch} = useTodo()
-
-    const[updatedV , setUpdatedV] = useState({ title:value , details:valueM})
-
-    // const {showBar} = useContext(ToastContext) 
+    const[updatedV , setUpdatedV] = useState({ title:value , details:valueM , comment :comment})
+    const [startTimeu, setStartTimeu] = useState(dayjs('2022-04-17'));
+    const [endTimeu, setEndTimeu] = useState(dayjs('2022-04-17'));
     const {showBar} = useToast() 
-    
     const handleUClose = () => setOpenU(false);
     const handleClose = () => setOpen(false);
     
-
-    // to change isCompleted to true to change color line under 
     function handleClick(todo){
 
         // 7ARAKET USE STATE EL 3ADI 
@@ -87,9 +76,9 @@ export default function BasicCard() {
         })
 
             if(todo.isCompleted){
-                showBar('U did')
+                showBar('in progress')
             }else{
-                showBar('U didnt ')
+                showBar('done')
             }
             
     } 
@@ -97,15 +86,12 @@ export default function BasicCard() {
     function boxModal(todo){
         setOpen(true)
         setSendTodo(todo)
-        console.log(todo)
     }
     // 
     function showUModal(todo){
         setOpenU(true)
         setSendTodo(todo)
     }
-
-    
     // to add new todo 
         function handleAdd(){
         // let newTodo = 
@@ -127,9 +113,14 @@ export default function BasicCard() {
             type:'add',
             payload:{
                 title:value,
-                details:valueM}})
+                details:valueM,
+                comment:comment,
+                startTime:startTime,
+                endTime:endTime
+            }})
         setVlaue('')                                        
         setVlaueM('');   
+        setComment('')
         showBar(add)   
     }
     //DELETED TODO
@@ -174,7 +165,11 @@ export default function BasicCard() {
             payload:{
                 title:updatedV.title,
                 details:updatedV.details,
-                targetTodo:sendTodo}})
+                targetTodo:sendTodo,
+                comment:updatedV.comment,
+                startTime:startTimeu,
+                endTime:endTimeu
+            }})
         setOpenU(false);
         showBar(updated)
             }
@@ -203,7 +198,24 @@ export default function BasicCard() {
                     return !element.isCompleted
             }) 
             },[todos])
-    
+            
+            const time = useMemo(()=>{
+                <>
+                 <DateField
+                label="start"
+                value={startTime}
+                onChange={(newValue) => setStartTime(newValue)}
+                format="MM-DD-YYYY"
+                />
+                <DateField
+                label="end "
+                value={endTime}
+                onChange={(newValue) => setEndTime(newValue)}
+                format="MM-DD-YYYY"
+                />
+                </>
+            },[startTime,endTime])
+          
 
 // RENDERING AFTER GET 
         let todoBeRender = todos
@@ -213,15 +225,30 @@ export default function BasicCard() {
                 todoBeRender = nonCompleted
             }
 
-        let pageTodo = todoBeRender.map(element =>{
+        let pageTodo = todos.map(element =>{
             return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
-                onChange={handleClick}
+                onChange={handleClick} 
                 />
+            })
+// new edition 
+
+        let inProgress = todoBeRender.map(element =>{
+                if(!element.isCompleted){
+                    return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
+                    onChange={handleClick}  />
+                }
+            })
+            let done = todoBeRender.map(element =>{
+                if(element.isCompleted){
+                    return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
+                    onChange={handleClick}  />
+                }
             })
 
     return (
 
         <>
+        
         {/* delteted modal  */}
         <Modal
                 aria-labelledby="transition-modal-title"
@@ -258,9 +285,8 @@ export default function BasicCard() {
             open={openU}
             onClose={handleUClose}
             aria-labelledby="child-modal-title"
-            aria-describedby="child-modal-description"
-        >
-            <Box sx={{ ...style, width: 600 ,height: 300 , textAlign:'left'}}>
+            aria-describedby="child-modal-description" >
+            <Box sx={{ ...style, width: 600 ,height: 500 , textAlign:'left' , overflow:'scroll'}}>
                 <div >
                     <h2 >  Update  ? </h2>
             <TextField id="outlined-basic" label="title" variant="outlined" sx={{  width: 500  }}
@@ -271,65 +297,138 @@ export default function BasicCard() {
             sx={{  width: 500 , marginTop:1 }}
             value ={updatedV.details} onChange={(e)=>{
                 setUpdatedV({...updatedV, details:e.target.value })}}/>
+            <TextField id="outlined-basic" label="title" variant="outlined" sx={{  width: 500 , marginTop:1 }}
+            value ={updatedV.comment} onChange={(e)=>{
+                setUpdatedV({...updatedV, comment:e.target.value })}}/>
+                 <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DateField', 'DateField']}>
+                        <DateField
+                        label="start"
+                        value={startTimeu}
+                        onChange={(newValue) => setStartTimeu(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                        <DateField
+                        label="end "
+                        value={endTimeu}
+                        onChange={(newValue) => setEndTimeu(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                    </DemoContainer>
+                    </LocalizationProvider>
             </div>
             <Button onClick={handleUpdating} sx={{  width: 150 , marginTop:1  ,fontSize:18 }}> Updating </Button>
             <Button onClick={handleUClose} sx={{  width: 150 , marginTop:1  ,fontSize:18 }}> close </Button>
             </Box>
         </Modal>
-            
-        <Card sx={{ minWidth: 275 , width:700 , maxHeight: "70vh", overflow:"scroll" }}>
-            <CardContent>
-                <Typography variant="h1" sx={{ fontSize: 40 }} 
-                    color="text.secondary" gutterBottom>
-                My Tasks
-                </Typography>
-                <Divider />
-                <ToggleButtonGroup 
-                    value={display}
-                    exclusive
-                    onChange={handleAlignment}
-                    aria-label="text alignment"
-                    color="secondary"
-                    >
-                    <ToggleButton className='icon' value="all" aria-label="left aligned" 
-                        onClick={ ()=>{}}>
-                        all
-                    </ToggleButton> 
-                    <ToggleButton  className='icon'  value="is-Completed" aria-label="centered" 
-                        onClick={ ()=>{}}>
-                        I DID  
-                    </ToggleButton>
-                    <ToggleButton   className='icon'  value="no-completed" aria-label="right aligned"
-                        onClick={ ()=>{}}> 
-                        I Didnt
-                    </ToggleButton>
-                    </ToggleButtonGroup>
-                <Typography component="div" sx={{ marginTop: 3 }} >
-                {pageTodo}
-                </Typography>
-            </CardContent>
-            <div style={{display:"flex", 
-                    justifyContent:"center",alignItems:"center" , marginBottom:"15px"}}>
-                <Grid container spacing={4} style={{display:"flex", 
-                        justifyContent:"center",alignItems:"center"}}>
-                    <Grid xs={4} >
-                    <Button variant="contained" style={{width:"100%" }}
-                        onClick={()=>{handleAdd()}} disabled={value.length == 0 || valueM.length == 0 } >Add</Button>
-                    </Grid> 
-                    <Grid xs={8}>
-                        < TextField id="outlined-basic" label="Write your Task" 
-                            variant="outlined" style={{width:"100%"}} value={value} 
-                            onChange={(e)=>{
-                        setVlaue(e.target.value)}}/>
-                    </Grid>
-                </Grid>
-            </div>
+     
+    <Box container sx={{ height:'100vh' , overflowy:"scroll", background:"wheat"  }}>
+        <Typography variant='h2'>Project task </Typography>
+        <div style={{display:"flex",justifyContent:"center",alignItems:"center" ,border:"1px solid red"}}>
+            <div style={{width:600 ,display:"flex", flexDirection:"column", gap:2,
+                    justifyContent:"center",alignItems:"center" , marginBottom:20}}>
+            < TextField id="outlined-basic" label="Write your Task" 
+                    variant="outlined" style={{width:"100%"}} value={value} 
+                    onChange={(e)=>{
+                    setVlaue(e.target.value)}}/>
+        
             < TextField autoFocus id="outlined-basic" label="here what i will do " 
-                            variant="outlined" style={{width:"100%"}} value={valueM} 
-                            onChange={(e)=>{
-                        setVlaueM(e.target.value)}}/>
-            
-        </Card>
+                    variant="outlined" style={{width:"100%",marginTop:7}} value={valueM} 
+                    onChange={(e)=>{
+                    setVlaueM(e.target.value)}}/>
+            < TextField autoFocus id="outlined-basic" label="comment " 
+                    variant="outlined" style={{width:"100%",marginTop:7}} value={comment} 
+                    onChange={(e)=>{
+                    setComment(e.target.value)}}/>
+                      {/* DATE PACKER */}
+                    
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DateField', 'DateField']}>
+                        <DateField
+                        label="start"
+                        value={startTime}
+                        onChange={(newValue) => setStartTime(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                        <DateField
+                        label="end "
+                        value={endTime}
+                        onChange={(newValue) => setEndTime(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                    </DemoContainer>
+                    </LocalizationProvider>
+                            <Button variant="contained" style={{width:"40%" }}
+                                    onClick={()=>{handleAdd()}} disabled={value.length == 0 || valueM.length == 0 } >Add
+                                    </Button>
+            </div> 
+        </div>
+        <ToggleButtonGroup 
+        sx={{marginBottom:2}}
+        value={display}
+        exclusive
+        onChange={handleAlignment}
+        aria-label="text alignment"
+        color="secondary"
+        >
+            <ToggleButton className='icon' value="all" aria-label="left aligned">
+                all
+            </ToggleButton> 
+            <ToggleButton  className='icon' value="no-completed"   aria-label="centered" >
+               in progress 
+            </ToggleButton>
+            <ToggleButton   className='icon' value="is-Completed" aria-label="right aligned"> 
+                done
+            </ToggleButton>
+        </ToggleButtonGroup>
+        <div style={{display:'flex',justifyContent:"space-between",gap:20}}> 
+            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="all">
+                <CardContent>
+                    <Typography variant="h1" sx={{ fontSize: 40 }} 
+                        color="text.secondary" gutterBottom>
+                    all
+                    </Typography>
+                    <Divider />
+                        
+                    <Typography component="div" sx={{ marginTop: 3 }} >
+                    {pageTodo}
+                    </Typography>
+                </CardContent>
+                        
+
+            </Card>
+            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="is-Completed">
+                <CardContent>
+                    <Typography variant="h1" sx={{ fontSize: 40 }} 
+                        color="text.secondary" gutterBottom>
+                    in progress 
+                    </Typography>
+                    <Divider />
+                    <Typography component="div" sx={{ marginTop: 3 }} > 
+                    {inProgress}
+                    </Typography>
+                </CardContent>
+                        
+
+            </Card>
+            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="no-completed">
+                <CardContent>
+                    <Typography variant="h1" sx={{ fontSize: 40 }} 
+                        color="text.secondary" gutterBottom>
+                    done
+                    </Typography>
+                    <Divider />
+                        
+                    <Typography component="div" sx={{ marginTop: 3 }} >
+                    {done}
+                    </Typography>
+                </CardContent>
+                        
+
+            </Card>
+        </div>
+       </Box>
+    
         </>
     );
     

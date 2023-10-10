@@ -11,9 +11,15 @@
 
         let mE = (msg === "successfuly you added massege" 
         ? <Alert  severity="success" sx={{ width: '100%' }}>{msg}</Alert>
-        : msg = " msg is deleted okey "
+        : msg === " msg is deleted okey "
         ?<Alert severity="error">{msg}</Alert>
-        :<Alert severity="info">{msg}</Alert> )
+        : msg === "in progress "?
+         <Alert severity="info">{msg}</Alert>
+        : msg === "done " 
+        ?<Alert severity="info">{msg}</Alert>
+        :<Alert severity="info">{msg}</Alert>
+
+          )
 
     return (
         <Stack spacing={2} sx={{ width: '100%' }}>
@@ -22,10 +28,6 @@
                 mE
             }
         </Snackbar>
-        {/* <Alert severity="error">This is an error message!</Alert>
-        <Alert severity="warning">This is a warning message!</Alert>
-        <Alert severity="info">This is an information message!</Alert>
-        <Alert severity="success">This is a success message!</Alert> */}
         </Stack>
     );
     }
