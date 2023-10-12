@@ -1,16 +1,18 @@
 import './App.css';
 import SimpleContainer from'./TodoApp'
 import { createTheme,ThemeProvider } from '@mui/material';
-// import { useState } from 'react';
-// import { TodoContext } from './Contexts/FirstContext';//ay context el 8alb ht3mlo provide mn app 
 import {ToastProvider } from './Contexts/ToastContext'
 import TodoProvider from './Contexts/TodoContext'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import SearchAppBar from './Nav'
+import { Route,Routes ,Link } from 'react-router-dom';
+import BasicCard from'./Card'
+import Button from '@mui/material/Button';
+
 function App() {
   
-  // let initialTodo = [];
-  // let [todos , setTodos] = useState(initialTodo);
 
-  //declare font-size 5sosan lel typography 
   const theme =createTheme({
     typography:{
       fontFamily: ["AhmedBold"],
@@ -26,17 +28,28 @@ function App() {
     }
   })
   return (
-    <ThemeProvider theme={theme}>
-      <TodoProvider>
-        <ToastProvider> 
-          {/* <TodoContext.Provider value={[todos,setTodos]}> */}
-            <div className="App">
-              <SimpleContainer/>
+    <DndProvider backend={HTML5Backend}>
+      <ThemeProvider theme={theme}>
+        <TodoProvider>
+          <ToastProvider> 
+            <SearchAppBar/>
+            <div style={{ background:"#8b4513a3" , display:'flex', justifyContent:"center",alignItems:"center", padding:"10px 0 10px"}}>
+              <Link to='/Todo'>
+              <Button  variant="contained">Todo</Button>
+              </Link>
             </div>
-          {/* </TodoContext.Provider> */}
-        </ToastProvider>
-      </TodoProvider>
-    </ThemeProvider>
+            <Routes>
+              <Route path='Todo' element = {<BasicCard/>} />
+            </Routes>
+              <div className="App">
+              {/* <DrawerAppBar/> */}
+                {/* <SimpleContainer/> */}
+              </div>
+          </ToastProvider>
+        </TodoProvider>
+      </ThemeProvider>
+      </DndProvider>
+    
   );
 }
 

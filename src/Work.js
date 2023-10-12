@@ -11,9 +11,18 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useDrag } from 'react-dnd';
 
 
 export default function Work({todo , openModal , updateModal , onChange}) {
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: "todo" ,
+        item: {id: todo.id},
+        collect: (monitor) => ({
+          isDragging: !!monitor.isDragging()
+        })
+      }))
+console.log(isDragging)
     function changeTask(){
         onChange(todo)
     }
@@ -24,17 +33,17 @@ export default function Work({todo , openModal , updateModal , onChange}) {
         updateModal(todo);
     } 
     return (
-      <Accordion sx={{ minWidth: 275 ,marginTop:2 }} className='card'>
+      <Accordion sx={{ minWidth: 275 ,marginTop:2 ,background:"#827717d1" , borderRadius:5}} className='card'  ref = {drag}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-           <Card  sx={{ minWidth: "100%"}} >
+           <Card  sx={{ minWidth: "100%" ,background:"#827717d1", borderRadius:5}} >
         <Grid container spacing={2}>
         <Grid xs={6}  style={{display:"flex",justifyContent:"space-around", 
         alignItems:"center"}}>                
-                <IconButton aria-label="delete" className='icon' onClick={handleOpen}>
+                <IconButton aria-label="delete"  onClick={handleOpen}>
                     <DeleteForeverIcon 
                     style={{
                         fontSize:"30px" ,
@@ -43,14 +52,14 @@ export default function Work({todo , openModal , updateModal , onChange}) {
                     />
                 </IconButton>
                 <IconButton color="secondary" aria-label="add an alarm" 
-                className='icon' onClick={handleUOpen} >
+                 onClick={handleUOpen} >
                     <AlarmIcon style={{
                         fontSize:"30px" ,
                         color:"#ffc107",
                         }}  />
                 </IconButton>
 
-                <IconButton color="primary" aria-label="add to shopping cart" className='icon'
+                <IconButton color="primary" aria-label="add to shopping cart" 
                 style={{
                     fontSize:"30px" ,
                     color:"#357a38",

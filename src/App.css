@@ -38,7 +38,7 @@
 }
 .card{
   transition:all 0.3s !important;
-  background-color: rgb(159, 92, 197) !important;
+  background-color:#827717d1 !important;
 }
 
 .card:hover{

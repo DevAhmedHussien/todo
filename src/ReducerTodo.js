@@ -24,7 +24,7 @@ export default function ReducerTodo(currentTodo,action){
                 details :action.payload.details,
                 comment:action.payload.comment,
                 startTime:action.payload.startTime,
-                endTime:action.payload.endTime  
+                endTime:action.payload.endTime,
             }} 
             else {
                     return element;
@@ -42,6 +42,7 @@ export default function ReducerTodo(currentTodo,action){
             let Utodo = currentTodo.map((element)=>{
                 if (element.id === action.payload.id){
                     const updateTodo = {...element , isCompleted:!element.isCompleted}
+                    
                     // element.isCompleted= !element.isCompleted; FE 7ALET REDUCE HATEB2A MUTATIION      
                     return updateTodo   
                 }

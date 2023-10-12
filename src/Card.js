@@ -20,26 +20,32 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
+import { useDrag, useDrop } from 'react-dnd'
 import './App.css';
+import './card.css'
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 600,
-    height:200,
+    width: "auto"  ,//"30%",
+    height:"auto",
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
+    background:'silver',
+    borderRadius:10,
 };
+
 const add = "successfuly you added massege"
 const deleted = " msg is deleted okey "
 const updated = " msg has been updated " 
 
 export default function BasicCard() {
     
+    let [search , setSearch] = useState('')
     let [sendTodo,setSendTodo] = useState()
     let [value , setVlaue] = useState('');
     let [valueM , setVlaueM] = useState('');
@@ -50,6 +56,7 @@ export default function BasicCard() {
     const [open, setOpen] = useState(false);
     const [openU, setOpenU] = useState(false); 
     let {todos,dispatch} = useTodo()
+    let [todoss , setTodoss] = useState(todos)
     const[updatedV , setUpdatedV] = useState({ title:value , details:valueM , comment :comment})
     const [startTimeu, setStartTimeu] = useState(dayjs('2022-04-17'));
     const [endTimeu, setEndTimeu] = useState(dayjs('2022-04-17'));
@@ -57,31 +64,28 @@ export default function BasicCard() {
     const handleUClose = () => setOpenU(false);
     const handleClose = () => setOpen(false);
     
-    function handleClick(todo){
+useEffect(()=>{
+    setTodoss(todos)
+    console.log('render effect')
+})
 
-        // 7ARAKET USE STATE EL 3ADI 
-        // let Utodo = todos.map((element)=>{
-        //     if (element.id === todo.id){
-        //         element.isCompleted= !element.isCompleted; // law true 5aliha false 
-        //     }
-        //     return element;
-        //     });
-        //     setTodos(Utodo);
-        //     localStorage.setItem("todos",JSON.stringify(todos))
-        //     console.log(todo)
-        // 7ARAKET L USE REDUSER 
+
+
+    function handleClick(todo){
         dispatch({
             type:'click',
-            payload :todo
-        })
+            payload :todo,
 
+        })
             if(todo.isCompleted){
                 showBar('in progress')
+         
+
             }else{
                 showBar('done')
+               
             }
-            
-    } 
+        }
     //sending value to todo (card componnents)
     function boxModal(todo){
         setOpen(true)
@@ -94,21 +98,7 @@ export default function BasicCard() {
     }
     // to add new todo 
         function handleAdd(){
-        // let newTodo = 
-        // {                                     
-        //     id : uuidv4() ,                                     
-        //     title : value ,                                     
-        //     details :valueM,                                        
-        //     isCompleted : false                                     
-        // }
-
-        // let setNewTodo =[...todos , newTodo];
-        // setTodos(setNewTodo)  
-        // localStorage.setItem("todos",JSON.stringify(setNewTodo))            
-        // setVlaue('')                                        
-        // setVlaueM('');   
-        // showBar(add)  
-         // way reduce        
+        
         dispatch({
             type:'add',
             payload:{
@@ -116,7 +106,7 @@ export default function BasicCard() {
                 details:valueM,
                 comment:comment,
                 startTime:startTime,
-                endTime:endTime
+                endTime:endTime,
             }})
         setVlaue('')                                        
         setVlaueM('');   
@@ -125,12 +115,7 @@ export default function BasicCard() {
     }
     //DELETED TODO
     function handleDclicked(){
-        // const DeleteTodo = 
-        // todos.filter((element) => element.id !== sendTodo.id); // emsa7 el element 
-        // setTodos(DeleteTodo);
-        // localStorage.setItem("todos",JSON.stringify(todos))
-
-        // way reduce 
+       
         dispatch({
             type:'delete',
             payload:sendTodo
@@ -142,24 +127,6 @@ export default function BasicCard() {
      //  tod editin or updating todo 
     function handleUpdating (){
 
-        //way el state el 3adi 
-
-
-        // console.log(sendTodo)
-        // const UpdatingTodo = todos.map( (element) => {
-        //     if (element.id ==  sendTodo.id){    
-        //     return {...element ,title: updatedV.title, details : updatedV.details,
-        //     }} 
-        //     else {
-        //             return element;
-        //         }
-        //         })
-        // setTodos(UpdatingTodo)
-        // localStorage.setItem("todos",JSON.stringify(todos))      
-        // setOpenU(false);
-        // showBar(updated)
-
-        // way reduce 
         dispatch({
             type:'update',
             payload:{
@@ -186,7 +153,6 @@ export default function BasicCard() {
         const handleAlignment=(event)=>{
             setDisplay(event.target.value)
             }
-    
             let isCompleted = useMemo(()=>{  // do copmute this function when has a changed in todos 
                 return todos.filter(element =>{
                     return element.isCompleted
@@ -224,7 +190,6 @@ export default function BasicCard() {
             }else if(display == "no-completed"){
                 todoBeRender = nonCompleted
             }
-
         let pageTodo = todos.map(element =>{
             return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
                 onChange={handleClick} 
@@ -232,25 +197,154 @@ export default function BasicCard() {
             })
 // new edition 
 
-        let inProgress = todoBeRender.map(element =>{
-                if(!element.isCompleted){
+        let inProgress = todos.map(element =>{
+                if(!element.isCompleted ){
                     return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
                     onChange={handleClick}  />
                 }
             })
-            let done = todoBeRender.map(element =>{
+            let done = todos.map(element =>{
                 if(element.isCompleted){
                     return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
                     onChange={handleClick}  />
                 }
             })
 
+            let x ;
+            //handlesearcch
+            // const handleSearch = (event) => {
+            //     const handleSearch = (event) => {
+            //         alert(search)
+            //       };
+            // };
+            // dragging  react dnd
+            const [{ isOver }, drop] = useDrop(() => ({
+                accept: "todo" ,
+                drop : (item)=>{addItemToSection(item.id) },
+                collect: (monitor) => ({
+                  isOver: !!monitor.isOver()
+                })
+            }))
+            const addItemToSection = (id)=>{
+                setTodoss((prev)=>{
+                    let tsks = prev.map(t=>{
+                        if(t.id === id ){
+                           return {...t , isCompleted:!t.isCompleted}
+                        }
+                        return t
+                    })
+                    return tsks
+                })
+             }      
+
     return (
 
         <>
+    <Box container  className="cardsBox" sx={{backgroundColor: '#efb58b47'}} >
+        <Typography  variant='h3' style={{textAlign:"center" ,padding:'50px 0 50px'}}>Project task </Typography>
+        <div style={{display:"flex",justifyContent:"center",alignItems:"center" }}>
+            <div style={{width:600 ,display:"flex", flexDirection:"column", gap:2,
+                    justifyContent:"center",alignItems:"center" , marginBottom:20}}>
+            < TextField id="outlined-basic" label="Write your Task" 
+                    variant="outlined" style={{width:"70%"}} value={value} 
+                    onChange={(e)=>{
+                    setVlaue(e.target.value)}}/>
         
+            < TextField autoFocus id="outlined-basic" label="here what i will do " 
+                    variant="outlined" style={{width:"80%",marginTop:7}} value={valueM} 
+                    onChange={(e)=>{
+                    setVlaueM(e.target.value)}}/>
+            < TextField autoFocus id="outlined-basic" label="comment " 
+                    variant="outlined" style={{width:"100%",marginTop:7}} value={comment} 
+                    onChange={(e)=>{
+                    setComment(e.target.value)}}/>
+                      {/* DATE PACKER */}
+                    
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DateField', 'DateField']}>
+                        <DateField
+                        label="start"
+                        value={startTime}
+                        onChange={(newValue) => setStartTime(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                        <DateField
+                        label="end "
+                        value={endTime}
+                        onChange={(newValue) => setEndTime(newValue)}
+                        format="MM-DD-YYYY"
+                        />
+                    </DemoContainer>
+                    </LocalizationProvider>
+                            <Button variant="contained" style={{width:"40%"  ,marginTop:30}}
+                                    onClick={()=>{handleAdd()}} disabled={value.length == 0 || valueM.length == 0 } >Add
+                                    </Button>
+            </div> 
+        </div>
+        <ToggleButtonGroup 
+        sx={{marginBottom:2 , display:"flex" , justifyContent :'center' ,padding:'50px 0 20px'}}
+        value={display}
+        exclusive
+        onChange={handleAlignment}
+        aria-label="text alignment"
+        color="secondary"
+        >
+            <ToggleButton className='icon' value="all" aria-label="left aligned">
+                all
+            </ToggleButton> 
+            <ToggleButton  className='icon' value="no-completed"   aria-label="centered" >
+               in progress 
+            </ToggleButton>
+            <ToggleButton   className='icon' value="is-Completed" aria-label="right aligned"> 
+                done
+            </ToggleButton>
+        </ToggleButtonGroup>
+{/* 
+        <input  value={search} onChange={(e)=>{
+            setSearch(e.target.value)
+            alert(search)
+
+        }}  */}
+   
+            
+        <div className='cards' ref={drop}> 
+            <Card  className = 'x' sx={{ minWidth: 275 , width:400 , maxHeight: "60vh", overflow:"scroll",   background: 'rgba(139, 69, 19, 0.64)'}}  section="all"  >
+                    <Typography variant="h4" className='TypoCard'
+                        color="text.secondary" gutterBottom>
+                    all
+                    </Typography>
+                    <Divider /> 
+                    <Typography component="div" sx={{ marginTop: 3 }} >
+                    {pageTodo}
+                    </Typography>
+            </Card>
+            <Card className = 'x' sx={{ minWidth: 275 , width:400 , maxHeight: "60vh", overflow:"scroll" , background:'rgba(139, 69, 19, 0.64)' }} section="in progress">
+                    <Typography variant="h4"  className='TypoCard' 
+                        color="text.secondary" gutterBottom>
+                    in progress 
+                    </Typography>
+                    <Divider />
+                    <Typography component="div" sx={{ marginTop: 3 }} > 
+                    {inProgress}
+                    </Typography>
+            </Card>
+            <Card className = 'x'  sx={{ minWidth: 275 , width:400 , maxHeight: "60vh", overflow:"scroll" , background:'rgba(139, 69, 19, 0.64)' }} section="done">
+                    <Typography variant="h4" className='TypoCard'  
+                        color="text.secondary" gutterBottom>
+                    done
+                    </Typography>
+                    <Divider />
+                    <Typography component="div" sx={{ marginTop: 3 }} >
+                    {done}
+                    </Typography>
+            </Card>
+            {/* {cards} */}
+        </div>
+       
+       </Box>
+      
         {/* delteted modal  */}
-        <Modal
+        <Modal className='deleted'
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
                 open={open}
@@ -281,23 +375,27 @@ export default function BasicCard() {
                 </Fade>
         </Modal> 
         {/* modal for update  */}
-        <Modal 
+        <Modal  className='updated'
             open={openU}
             onClose={handleUClose}
             aria-labelledby="child-modal-title"
             aria-describedby="child-modal-description" >
-            <Box sx={{ ...style, width: 600 ,height: 500 , textAlign:'left' , overflow:'scroll'}}>
+            <Box sx={{ ...style , width: "50%", 
+    height:"60%", textAlign:'left' , overflow:'scroll'}}>
                 <div >
                     <h2 >  Update  ? </h2>
-            <TextField id="outlined-basic" label="title" variant="outlined" sx={{  width: 500  }}
+            <TextField id="outlined-basic" label="title" 
+            variant="outlined" sx={{  width: "100%"  }}
             value ={updatedV.title} onChange={(e)=>{
                 setUpdatedV({...updatedV, title:e.target.value })}}/>
 
-            <TextField id="outlined-basic" label="details" variant="outlined" 
-            sx={{  width: 500 , marginTop:1 }}
+            <TextField id="outlined-basic" label="details"
+             variant="outlined" 
+            sx={{  width: "100%" , marginTop:1 }}
             value ={updatedV.details} onChange={(e)=>{
                 setUpdatedV({...updatedV, details:e.target.value })}}/>
-            <TextField id="outlined-basic" label="title" variant="outlined" sx={{  width: 500 , marginTop:1 }}
+            <TextField id="outlined-basic" label="title" variant="outlined"
+              sx={{  width: "100%"  , marginTop:1 }}
             value ={updatedV.comment} onChange={(e)=>{
                 setUpdatedV({...updatedV, comment:e.target.value })}}/>
                  <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -316,120 +414,13 @@ export default function BasicCard() {
                         />
                     </DemoContainer>
                     </LocalizationProvider>
-            </div>
-            <Button onClick={handleUpdating} sx={{  width: 150 , marginTop:1  ,fontSize:18 }}> Updating </Button>
-            <Button onClick={handleUClose} sx={{  width: 150 , marginTop:1  ,fontSize:18 }}> close </Button>
+            </div >
+            <Button onClick={handleUpdating} sx={{  width: 150 , marginTop:5  ,fontSize:18 }}> Updating </Button>
+            <Button onClick={handleUClose} sx={{  width: 150 , marginTop:5  ,fontSize:18 }}> close </Button>
             </Box>
         </Modal>
-     
-    <Box container sx={{ height:'100vh' , overflowy:"scroll", background:"wheat"  }}>
-        <Typography variant='h2'>Project task </Typography>
-        <div style={{display:"flex",justifyContent:"center",alignItems:"center" ,border:"1px solid red"}}>
-            <div style={{width:600 ,display:"flex", flexDirection:"column", gap:2,
-                    justifyContent:"center",alignItems:"center" , marginBottom:20}}>
-            < TextField id="outlined-basic" label="Write your Task" 
-                    variant="outlined" style={{width:"100%"}} value={value} 
-                    onChange={(e)=>{
-                    setVlaue(e.target.value)}}/>
-        
-            < TextField autoFocus id="outlined-basic" label="here what i will do " 
-                    variant="outlined" style={{width:"100%",marginTop:7}} value={valueM} 
-                    onChange={(e)=>{
-                    setVlaueM(e.target.value)}}/>
-            < TextField autoFocus id="outlined-basic" label="comment " 
-                    variant="outlined" style={{width:"100%",marginTop:7}} value={comment} 
-                    onChange={(e)=>{
-                    setComment(e.target.value)}}/>
-                      {/* DATE PACKER */}
-                    
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DateField', 'DateField']}>
-                        <DateField
-                        label="start"
-                        value={startTime}
-                        onChange={(newValue) => setStartTime(newValue)}
-                        format="MM-DD-YYYY"
-                        />
-                        <DateField
-                        label="end "
-                        value={endTime}
-                        onChange={(newValue) => setEndTime(newValue)}
-                        format="MM-DD-YYYY"
-                        />
-                    </DemoContainer>
-                    </LocalizationProvider>
-                            <Button variant="contained" style={{width:"40%" }}
-                                    onClick={()=>{handleAdd()}} disabled={value.length == 0 || valueM.length == 0 } >Add
-                                    </Button>
-            </div> 
-        </div>
-        <ToggleButtonGroup 
-        sx={{marginBottom:2}}
-        value={display}
-        exclusive
-        onChange={handleAlignment}
-        aria-label="text alignment"
-        color="secondary"
-        >
-            <ToggleButton className='icon' value="all" aria-label="left aligned">
-                all
-            </ToggleButton> 
-            <ToggleButton  className='icon' value="no-completed"   aria-label="centered" >
-               in progress 
-            </ToggleButton>
-            <ToggleButton   className='icon' value="is-Completed" aria-label="right aligned"> 
-                done
-            </ToggleButton>
-        </ToggleButtonGroup>
-        <div style={{display:'flex',justifyContent:"space-between",gap:20}}> 
-            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="all">
-                <CardContent>
-                    <Typography variant="h1" sx={{ fontSize: 40 }} 
-                        color="text.secondary" gutterBottom>
-                    all
-                    </Typography>
-                    <Divider />
-                        
-                    <Typography component="div" sx={{ marginTop: 3 }} >
-                    {pageTodo}
-                    </Typography>
-                </CardContent>
-                        
-
-            </Card>
-            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="is-Completed">
-                <CardContent>
-                    <Typography variant="h1" sx={{ fontSize: 40 }} 
-                        color="text.secondary" gutterBottom>
-                    in progress 
-                    </Typography>
-                    <Divider />
-                    <Typography component="div" sx={{ marginTop: 3 }} > 
-                    {inProgress}
-                    </Typography>
-                </CardContent>
-                        
-
-            </Card>
-            <Card sx={{ minWidth: 275 , width:500 , maxHeight: "60vh", overflow:"scroll" }} value="no-completed">
-                <CardContent>
-                    <Typography variant="h1" sx={{ fontSize: 40 }} 
-                        color="text.secondary" gutterBottom>
-                    done
-                    </Typography>
-                    <Divider />
-                        
-                    <Typography component="div" sx={{ marginTop: 3 }} >
-                    {done}
-                    </Typography>
-                </CardContent>
-                        
-
-            </Card>
-        </div>
-       </Box>
-    
         </>
+        
     );
     
 }
