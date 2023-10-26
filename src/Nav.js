@@ -8,6 +8,11 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
+import { useState , useEffect } from 'react';
+import  { useTodo}  from './Contexts/TodoContext';
+import Work from './Work';
+// import { Link } from 'react-router-dom';
+
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,7 +56,22 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar() {
+export default function SearchAppBar({ openModal , updateModal , onChange}) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  let {todos} = useTodo()
+
+
+  useEffect(() => {
+    if(searchQuery.length > 0){
+        const filteredResults = todos.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredData(filteredResults);
+    }else{
+        setFilteredData([])
+    }
+},[searchQuery]);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -63,7 +83,9 @@ export default function SearchAppBar() {
             aria-label="open drawer"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            {/* <Link to='/'> */}
+                <MenuIcon />
+            {/* </Link> */}
           </IconButton>
           <Typography
             variant="h6"
@@ -71,7 +93,7 @@ export default function SearchAppBar() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-           Todo
+            Todo
           </Typography>
           <Search>
             <SearchIconWrapper>
@@ -80,10 +102,26 @@ export default function SearchAppBar() {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value ={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </Search>
         </Toolbar>
       </AppBar>
+      <div style={{ display:"flex" , position: 'absolute', right : 0, 
+      flexDirection:"column",alignItems:"start", 
+      justifyContent :'center' ,
+      backgroundColor:"#b58868",
+      opacity:0.8,
+      // height:"30%",
+      overflow:'scroll'
+      
+    }}>
+            {filteredData.map((item) => (
+                <Work key={item.id}  todo= {item} openModal={openModal} updateModal={updateModal} 
+                onChange={onChange}  />
+            ))}
+        </div>
     </Box>
   );
 }

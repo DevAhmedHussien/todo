@@ -9,10 +9,9 @@ import SearchAppBar from './Nav'
 import { Route,Routes ,Link } from 'react-router-dom';
 import BasicCard from'./Card'
 import Button from '@mui/material/Button';
+import WhowIam from './whowIam'
 
 function App() {
-  
-
   const theme =createTheme({
     typography:{
       fontFamily: ["AhmedBold"],
@@ -20,7 +19,7 @@ function App() {
     },
     palette:{
       primary :{
-        main:"#827717" //#827717
+        main:"#827717" 
       },
       secondary:{
         main:"#825457"
@@ -28,27 +27,27 @@ function App() {
     }
   })
   return (
+  <ThemeProvider theme={theme}>
     <DndProvider backend={HTML5Backend}>
-      <ThemeProvider theme={theme}>
         <TodoProvider>
           <ToastProvider> 
-            <SearchAppBar/>
-            <div style={{ background:"#8b4513a3" , display:'flex', justifyContent:"center",alignItems:"center", padding:"10px 0 10px"}}>
+            {/* <SearchAppBar/> */}
+            <div style={{ background:"#8b4513a3" , display:'flex', justifyContent:"center",alignItems:"center", padding:"10px 0 10px" ,gap:10}}>
               <Link to='/Todo'>
               <Button  variant="contained">Todo</Button>
+              </Link>
+              <Link to='/whowIam'>
+              <Button  variant="contained">About me</Button>
               </Link>
             </div>
             <Routes>
               <Route path='Todo' element = {<BasicCard/>} />
+              <Route path='whowIam' element = {<WhowIam/>} />
             </Routes>
-              <div className="App">
-              {/* <DrawerAppBar/> */}
-                {/* <SimpleContainer/> */}
-              </div>
           </ToastProvider>
         </TodoProvider>
-      </ThemeProvider>
       </DndProvider>
+    </ThemeProvider>
     
   );
 }

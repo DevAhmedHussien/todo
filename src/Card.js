@@ -23,6 +23,7 @@ import { DateField } from '@mui/x-date-pickers/DateField';
 import { useDrag, useDrop } from 'react-dnd'
 import './App.css';
 import './card.css'
+import SearchAppBar from './Nav';
 
 const style = {
     position: 'absolute',
@@ -197,13 +198,13 @@ useEffect(()=>{
             })
 // new edition 
 
-        let inProgress = todos.map(element =>{
+        let inProgress = todoBeRender.map(element =>{
                 if(!element.isCompleted ){
                     return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
                     onChange={handleClick}  />
                 }
             })
-            let done = todos.map(element =>{
+            let done = todoBeRender.map(element =>{
                 if(element.isCompleted){
                     return <Work key={element.id}  todo= {element} openModal={boxModal} updateModal={showUModal} 
                     onChange={handleClick}  />
@@ -240,6 +241,7 @@ useEffect(()=>{
     return (
 
         <>
+        <SearchAppBar openModal={boxModal} updateModal={showUModal} onChange={handleClick}/>
     <Box container  className="cardsBox" sx={{backgroundColor: '#efb58b47'}} >
         <Typography  variant='h3' style={{textAlign:"center" ,padding:'50px 0 50px'}}>Project task </Typography>
         <div style={{display:"flex",justifyContent:"center",alignItems:"center" }}>
@@ -306,7 +308,6 @@ useEffect(()=>{
 
         }}  */}
    
-            
         <div className='cards' ref={drop}> 
             <Card  className = 'x' sx={{ minWidth: 275 , width:400 , maxHeight: "60vh", overflow:"scroll",   background: 'rgba(139, 69, 19, 0.64)'}}  section="all"  >
                     <Typography variant="h4" className='TypoCard'
@@ -340,9 +341,7 @@ useEffect(()=>{
             </Card>
             {/* {cards} */}
         </div>
-       
        </Box>
-      
         {/* delteted modal  */}
         <Modal className='deleted'
                 aria-labelledby="transition-modal-title"
